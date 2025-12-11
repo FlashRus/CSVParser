@@ -1,15 +1,16 @@
 # CSVParser
-Delphi Simple CSV Parser. Load CSV Data and start processing it.
+Delphi Simple CSV Parser with no memory leak. Load CSV Data and start processing it.
 
 # Usage :
 Add csvparser.pas on delphi IDE library
 
+Create only one instance of TCSVParser on programm start: ParseCsv := TCSVParser.Create;
 ```
 uses CSVParser;
 
 var ParseCsv: TCSVParser;
 begin
-  ParseCsv := TCSVParser.Create;
+  
   try
     ParseCsv.SetDataFile := 'your\directory\example.csv';
     ParseCsv.Open;
@@ -21,11 +22,10 @@ begin
     end;
     
   finally
-    ParseCsv.Free;
+    ParseCsv.Clear; //clear all of used StringLists
   end;
 end;
 ```
-And Enjoy....
 
 Available properties and methods :
 * property SetDataFile - Set csv directori file
@@ -33,7 +33,3 @@ Available properties and methods :
 * property Fields - result string from Index of column
 * property FieldByName - result string from Name of column
 and others read source
-
-Semoga Bermanfaat :kissing_closed_eyes:
-
-Hope Useful :kissing_closed_eyes:
