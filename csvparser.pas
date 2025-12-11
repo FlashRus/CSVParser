@@ -1,5 +1,5 @@
 {==============================================================================|
-| Project : Delphi Simple CSV Parser module | Version : Github Varsion         |
+| Project : Delphi Simple CSV Parser module | Version : Fork         |
 |==============================================================================|
 | Initial Developers of the Original Code are:                                 |
 | NanakSR (Indonesia) nanaksr.com                                              |
@@ -24,9 +24,11 @@ type
     FRowCount : integer;
     FIndex: Integer;
     Feof: Boolean;
-
+    GetFiles : TStringList;
+    Colmn : TStringList;
     FCol : TStringList;
     FRow : TStringList;
+    Row: TStringList;
     function GetFields(ColNo: Integer) : String;
     function GetFieldByName(ColName: string) : String;
   public
@@ -34,6 +36,7 @@ type
     property SetDataFile : ShortString read FDataFile write FDataFile;
     property SetDelimeter : Char read FDelimiter write FDelimiter default ',';
     procedure Open;
+    procedure Clear;
     property RowCount : integer read FRowCount;
     property Fields[index : integer] : string read GetFields;
     property FieldByName[index : string] : string read GetFieldByName;
@@ -51,23 +54,33 @@ implementation
 constructor TCSVParser.Create;
 begin
   FDataFile := '';
-  FDelimiter := ',';
+  FDelimiter := ';';
   FCol := TStringList.Create;
   FRow := TStringList.Create;
   FColCount := 0;
   FRowCount := 0;
   FIndex := -1;
+  GetFiles := TStringList.Create;
+  Colmn := TStringList.Create;
+  Row:= TStringList.Create;
+end;
+
+procedure TCSVParser.Clear;
+begin
+FCol.Clear;
+FRow.Clear;
+GetFiles.Clear;
+Colmn.Clear;
+Row.Clear;
 end;
 
 procedure TCSVParser.Open;
 var
-  GetFiles,Colmn : TStringList;
   I,J : integer;
 begin
-  GetFiles := TStringList.Create;
   GetFiles.LoadFromFile(FDataFile);
 
-  Colmn := TStringList.Create;
+
   Colmn.StrictDelimiter := True;
   Colmn.Delimiter := FDelimiter;
   Colmn.DelimitedText := GetFiles.Strings[0];
@@ -79,7 +92,7 @@ begin
   end;
 
   FRowCount := 0;
-  for J := 1 to GetFiles.Count-1 do
+  for J := 0 to GetFiles.Count-1 do
   begin
     Inc(FRowCount);
     FRow.Add(GetFiles.Strings[J]);
@@ -90,13 +103,11 @@ begin
 end;
 
 function TCSVParser.GetFields(ColNo: Integer) : String;
-var
-  Row: TStringList;
 begin
   if ColNo > FColCount then
     raise Exception.Create('out of index column, Max: Fields['+IntToStr(FColCount)+']');
 
-  Row := TStringList.Create;
+  Row.Clear;
   Row.StrictDelimiter := True;
   Row.Delimiter := FDelimiter;
   Row.DelimitedText := FRow.Strings[FIndex];
@@ -112,7 +123,7 @@ begin
   if ColIndex = -1 then
     raise Exception.Create('Column '+ColName+' Not Found');
 
-  Row := TStringList.Create;
+  Row.Clear;
   Row.StrictDelimiter := True;
   Row.Delimiter := FDelimiter;
   Row.DelimitedText := FRow.Strings[FIndex];
